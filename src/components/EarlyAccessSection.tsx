@@ -73,7 +73,7 @@ export default function EarlyAccessSection() {
                 <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
                   <CheckCircle className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
                   <p className="text-emerald-800 font-medium">Thank you for joining our waitlist!</p>
-                  <p className="text-emerald-600 text-sm mt-1">We'll be in touch soon with updates.</p>
+                  <p className="text-emerald-600 text-sm mt-1">We&apos;ll be in touch soon with updates.</p>
                 </div>
               </div>
             )}

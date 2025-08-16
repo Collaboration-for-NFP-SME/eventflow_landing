@@ -177,7 +177,7 @@ export default function DataCollectionModal({
           {/* Primary Challenge */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              What's your biggest organizational challenge right now? *
+              What&apos;s your biggest organizational challenge right now? *
             </label>
             <select
               value={formData.primaryChallenge}
@@ -286,7 +286,7 @@ export default function DataCollectionModal({
 
         <div className="px-6 pb-6">
           <p className="text-xs text-slate-500 text-center">
-            This helps us understand your needs better. We'll never spam you or share your data.
+            This helps us understand your needs better. We&apos;ll never spam you or share your data.
           </p>
         </div>
       </div>

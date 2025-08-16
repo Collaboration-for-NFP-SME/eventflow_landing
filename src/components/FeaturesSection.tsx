@@ -36,7 +36,7 @@ export default function FeaturesSection() {
             Everything You Need in <span className="gradient-text">One Platform</span>
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            From communication management to event coordination, we've got all your organizational needs covered.
+            From communication management to event coordination, we&apos;ve got all your organizational needs covered.
           </p>
         </div>
 
