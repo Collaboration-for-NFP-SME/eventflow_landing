@@ -1,3 +1,4 @@
+//src/components/EarlyAccessSection.tsx
 'use client'
 
 import { useState } from 'react'
@@ -67,6 +68,10 @@ export default function EarlyAccessSection() {
                     Join Waitlist
                   </button>
                 </div>
+                
+                <p className="text-xs text-slate-500 mt-4 text-center">
+                  We respect your privacy and are committed to protecting your personal information. Your email and any data you provide will only be used to send you updates about EventFlow and improve our services. We will never share your information with third parties without your consent.
+                </p>
               </form>
             ) : (
               <div className="max-w-md mx-auto">
@@ -75,12 +80,12 @@ export default function EarlyAccessSection() {
                   <p className="text-emerald-800 font-medium">Thank you for joining our waitlist!</p>
                   <p className="text-emerald-600 text-sm mt-1">We&apos;ll be in touch soon with updates.</p>
                 </div>
+                
+                <p className="text-xs text-slate-500 mt-4 text-center">
+                  We respect your privacy and are committed to protecting your personal information. Your email and any data you provide will only be used to send you updates about EventFlow and improve our services. We will never share your information with third parties without your consent.
+                </p>
               </div>
             )}
-
-            <p className="text-sm text-slate-500 mt-6">
-              No spam, unsubscribe at any time. We respect your privacy.
-            </p>
           </div>
         </div>
       </section>

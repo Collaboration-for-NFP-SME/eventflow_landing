@@ -1,3 +1,4 @@
+//src/components/PrototypeSection.tsx
 import { Target } from 'lucide-react'
 
 export default function PrototypeSection() {
@@ -10,7 +11,8 @@ export default function PrototypeSection() {
             Experience EventFlow in Action
           </h2>
           <p className="text-slate-300 mb-6 text-lg">
-            Try our interactive prototype and see how EventFlow can transform your organization&apos;s workflow.
+            Try our interactive prototype and see how EventFlow can transform your organization&apos;s 
+            volunteer management, board governance, and event planning workflow.
           </p>
           <button className="bg-emerald-500 hover:bg-emerald-600 text-white font-medium px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-lg">
             Try Interactive Prototype

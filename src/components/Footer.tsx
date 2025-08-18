@@ -1,3 +1,4 @@
+//src/components/Footer.tsx
 import { Zap, Shield } from 'lucide-react'
 
 export default function Footer() {
@@ -13,7 +14,9 @@ export default function Footer() {
               <span className="text-xl font-outfit font-bold">EventFlow</span>
             </div>
             <p className="text-slate-400 mb-6 max-w-md">
-              Streamlining communications and event management for organizations of all sizes.
+              Simplifying operations for NFPs and small to medium businesses. 
+              Streamline volunteers, events, board meetings, and stakeholder management 
+              all from one central hub.
             </p>
             <div className="flex items-center space-x-2 text-slate-400">
               <Shield className="w-4 h-4" />

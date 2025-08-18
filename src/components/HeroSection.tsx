@@ -1,3 +1,4 @@
+//src/components/HeroSection.tsx
 'use client'
 
 import { ArrowRight, Play } from 'lucide-react'
@@ -15,15 +16,14 @@ export default function HeroSection() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center fade-in-up">
           <h1 className="text-4xl md:text-6xl font-outfit font-bold mb-6">
-            Streamline Your{' '}
-            <span className="gradient-text">Communications</span>
-            <br />
-            & Events Like Never Before
+            EventFlow – Simplifying Operations for{' '}
+            <span className="gradient-text">NFPs and Small to Medium Businesses</span>
           </h1>
-          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            The all-in-one platform for individuals, small to medium businesses, and nonprofits 
-            to manage communications, coordinate events, track projects, and organize volunteers 
-            with ease.
+          <p className="text-xl text-slate-600 mb-8 max-w-4xl mx-auto leading-relaxed">
+            EventFlow is an all-in-one platform built to help not-for-profits, community organisations, 
+            and small businesses streamline their operations. Whether you&apos;re managing volunteers, planning events, 
+            running board meetings, or keeping track of stakeholders, EventFlow gives you the tools to stay 
+            organised, save time, and stay compliant - all from one central hub.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-12">
@@ -48,8 +48,8 @@ export default function HeroSection() {
               <div className="text-slate-600">Weekly Time Savings</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold gradient-text">Zero Setup</div>
-              <div className="text-slate-600">Ready to Use</div>
+              <div className="text-3xl font-bold gradient-text">Stay Compliant</div>
+              <div className="text-slate-600">Governance & Tracking</div>
             </div>
           </div>
         </div>

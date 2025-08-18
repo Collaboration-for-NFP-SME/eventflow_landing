@@ -1,6 +1,8 @@
+//src/components/DataCollectionModal.tsx
 'use client'
 
 import { useState } from 'react'
+import React from 'react'
 import { X, Users, Building, Heart, CheckCircle2 } from 'lucide-react'
 
 interface DataCollectionModalProps {
@@ -38,19 +40,55 @@ export default function DataCollectionModal({
     priorityFeature: ''
   })
 
+  // Update email when prefilledEmail changes
+  React.useEffect(() => {
+    setFormData(prev => ({ ...prev, email: prefilledEmail }))
+  }, [prefilledEmail])
+
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showOptionalFields, setShowOptionalFields] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   if (!isOpen) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setSubmitError('')
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    onSubmit(formData)
-    setIsSubmitting(false)
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          name: formData.name,
+          organizationType: formData.organizationType,
+          // Only include optional fields if they have values
+          ...(formData.primaryChallenge && { primaryChallenge: formData.primaryChallenge }),
+          ...(formData.currentTools.length > 0 && { currentTools: formData.currentTools }),
+          ...(formData.priorityFeature && { priorityFeature: formData.priorityFeature }),
+          ...(formData.hearAboutUs && { hearAboutUs: formData.hearAboutUs }),
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to join waitlist')
+      }
+
+      // Success - call the parent onSubmit function
+      onSubmit(formData)
+      
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      setSubmitError(error instanceof Error ? error.message : 'Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleToolToggle = (tool: string) => {
@@ -83,11 +121,10 @@ export default function DataCollectionModal({
   ]
 
   const priorityFeatures = [
-    'Communication Management',
-    'Event Planning & Management',
-    'Volunteer Coordination',
-    'Project Tracking',
-    'Digital Business Cards',
+    'Volunteer Management',
+    'Basic CRM',
+    'Board Management',
+    'Collaborative Event Planning',
     'Document Management',
     'Analytics & Reporting'
   ]
@@ -109,6 +146,13 @@ export default function DataCollectionModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Error Message */}
+          {submitError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-red-800 text-sm">{submitError}</p>
+            </div>
+          )}
+
           {/* Name and Email */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -174,95 +218,123 @@ export default function DataCollectionModal({
             </div>
           </div>
 
-          {/* Primary Challenge */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              What&apos;s your biggest organizational challenge right now? *
-            </label>
-            <select
-              value={formData.primaryChallenge}
-              onChange={(e) => setFormData(prev => ({ ...prev, primaryChallenge: e.target.value }))}
-              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
-              required
-            >
-              <option value="">Select your main challenge</option>
-              <option value="communication">Managing communications across team/volunteers</option>
-              <option value="events">Organizing and promoting events</option>
-              <option value="volunteers">Coordinating volunteers and tracking hours</option>
-              <option value="projects">Tracking project progress for clients</option>
-              <option value="contacts">Managing contacts and relationships</option>
-              <option value="documents">Organizing documents and compliance</option>
-              <option value="time">Too much time on administrative tasks</option>
-              <option value="tools">Too many different tools to manage</option>
-            </select>
-          </div>
-
-          {/* Current Tools */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-3">
-              What tools do you currently use? (Select all that apply)
-            </label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {currentToolsOptions.map((tool) => (
-                <label
-                  key={tool}
-                  className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all text-sm ${
-                    formData.currentTools.includes(tool)
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                      : 'border-slate-200 hover:border-slate-300'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={formData.currentTools.includes(tool)}
-                    onChange={() => handleToolToggle(tool)}
-                    className="sr-only"
-                  />
-                  <span className="flex-1">{tool}</span>
-                  {formData.currentTools.includes(tool) && (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 ml-2" />
-                  )}
-                </label>
-              ))}
+          {/* Optional Fields */}
+          <div className="border-t border-slate-200 pt-6">
+            <div className="bg-slate-50 rounded-lg p-4 mb-4">
+              <p className="text-xs text-slate-500 text-center mb-3">
+                We respect your privacy and are committed to protecting your personal information. Your email and any data you provide will only be used to send you updates about EventFlow and improve our services. We will never share your information with third parties without your consent.
+              </p>
+              
+              <button
+                type="button"
+                onClick={() => setShowOptionalFields(!showOptionalFields)}
+                className="w-full flex items-center justify-center space-x-2 text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+              >
+                <span>{showOptionalFields ? 'Hide' : 'Show'} Optional Information</span>
+                <span className="text-sm">({showOptionalFields ? '−' : '+'})</span>
+              </button>
+              
+              {!showOptionalFields && (
+                <p className="text-xs text-slate-400 text-center mt-2">
+                  Help us serve you better by sharing more details (optional)
+                </p>
+              )}
             </div>
-          </div>
 
-          {/* Priority Feature */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Which feature would be most valuable to you first? *
-            </label>
-            <select
-              value={formData.priorityFeature}
-              onChange={(e) => setFormData(prev => ({ ...prev, priorityFeature: e.target.value }))}
-              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
-              required
-            >
-              <option value="">Select most important feature</option>
-              {priorityFeatures.map((feature) => (
-                <option key={feature} value={feature}>{feature}</option>
-              ))}
-            </select>
-          </div>
+            {showOptionalFields && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-medium text-slate-900 mb-4">Optional Information (Help us serve you better)</h3>
+                
+                {/* Primary Challenge */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    What&apos;s your biggest organizational challenge right now?
+                  </label>
+                  <select
+                    value={formData.primaryChallenge}
+                    onChange={(e) => setFormData(prev => ({ ...prev, primaryChallenge: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
+                  >
+                    <option value="">Select your main challenge</option>
+                    <option value="volunteers">Coordinating volunteers and tracking hours</option>
+                    <option value="board-governance">Board meetings and governance</option>
+                    <option value="events">Organizing and promoting events</option>
+                    <option value="contacts">Managing contacts and relationships</option>
+                    <option value="documents">Organizing documents and compliance</option>
+                    <option value="time">Too much time on administrative tasks</option>
+                    <option value="tools">Too many different tools to manage</option>
+                    <option value="communication">Managing communications across team/volunteers</option>
+                  </select>
+                </div>
 
-          {/* How did you hear about us */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              How did you hear about EventFlow?
-            </label>
-            <select
-              value={formData.hearAboutUs}
-              onChange={(e) => setFormData(prev => ({ ...prev, hearAboutUs: e.target.value }))}
-              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
-            >
-              <option value="">Select an option</option>
-              <option value="social-media">Social Media</option>
-              <option value="search-engine">Search Engine</option>
-              <option value="friend-colleague">Friend/Colleague</option>
-              <option value="event-demo">Event/Demo</option>
-              <option value="newsletter">Newsletter/Blog</option>
-              <option value="other">Other</option>
-            </select>
+                {/* Current Tools */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-3">
+                    What tools do you currently use? (Select all that apply)
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {currentToolsOptions.map((tool) => (
+                      <label
+                        key={tool}
+                        className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all text-sm ${
+                          formData.currentTools.includes(tool)
+                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                            : 'border-slate-200 hover:border-slate-300'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.currentTools.includes(tool)}
+                          onChange={() => handleToolToggle(tool)}
+                          className="sr-only"
+                        />
+                        <span className="flex-1">{tool}</span>
+                        {formData.currentTools.includes(tool) && (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 ml-2" />
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Priority Feature */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Which feature would be most valuable to you first?
+                  </label>
+                  <select
+                    value={formData.priorityFeature}
+                    onChange={(e) => setFormData(prev => ({ ...prev, priorityFeature: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
+                  >
+                    <option value="">Select most important feature</option>
+                    {priorityFeatures.map((feature) => (
+                      <option key={feature} value={feature}>{feature}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* How did you hear about us */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    How did you hear about EventFlow?
+                  </label>
+                  <select
+                    value={formData.hearAboutUs}
+                    onChange={(e) => setFormData(prev => ({ ...prev, hearAboutUs: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none"
+                  >
+                    <option value="">Select an option</option>
+                    <option value="social-media">Social Media</option>
+                    <option value="search-engine">Search Engine</option>
+                    <option value="friend-colleague">Friend/Colleague</option>
+                    <option value="event-demo">Event/Demo</option>
+                    <option value="newsletter">Newsletter/Blog</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Submit Button */}
@@ -271,24 +343,19 @@ export default function DataCollectionModal({
               type="button"
               onClick={onClose}
               className="flex-1 px-6 py-3 text-slate-600 hover:text-slate-800 transition-colors"
+              disabled={isSubmitting}
             >
               Maybe Later
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !formData.email || !formData.name || !formData.organizationType}
               className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Joining Waitlist...' : 'Join Waitlist & Help Us Build'}
             </button>
           </div>
         </form>
-
-        <div className="px-6 pb-6">
-          <p className="text-xs text-slate-500 text-center">
-            This helps us understand your needs better. We&apos;ll never spam you or share your data.
-          </p>
-        </div>
       </div>
     </div>
   )
